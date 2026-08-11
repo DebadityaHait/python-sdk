@@ -4,11 +4,16 @@
 
 - `main` is the current stable line (v2); releases are cut from it (see
   `RELEASE.md`).
-- Removing or replacing an API must be intentional, and what shipped in 2.x
-  is public surface. Adding a replacement API or `@deprecated` shim is
-  likewise a deliberate design choice, not bolted on for free.
-- Changes that break code written against v1 (including those softened by a
-  backwards-compatibility shim) must be documented in `docs/migration.md`.
+- v2 is released; its public API is a compatibility contract for the whole
+  2.x line. Don't remove, rename, or change the signature or observable
+  behaviour of anything public (the `mcp` `__all__` surface, `mcp-types`,
+  documented behaviour). If a task seems to require that, stop and tell the
+  user — it isn't a decision to make inside a PR. See API Stability below.
+- Additions are permanent: whatever public surface ships in a 2.x release
+  joins the same contract. New public symbols and `@deprecated` shims are
+  deliberate design choices, never a convenience.
+- `docs/migration.md` is the v1 → v2 record and is closed to new entries.
+  Correcting errors or improving clarity in what's there is fine.
 - `v1.x` is the maintenance branch for the previous major. Backport PRs
   target it and use a `[v1.x]` title prefix; only critical bug fixes and
   security fixes land there.
@@ -123,17 +128,22 @@ What the existing pragmas mean:
 - `# pragma: no branch` — excludes branch arcs only. coverage.py misreports the
   `->exit` arc for nested `async with` on Python 3.11+ (worse on 3.14/Windows).
 
-## Breaking Changes
+## API Stability
 
-When making breaking changes, document them in `docs/migration.md` — including
-changes softened by a backwards-compatibility shim. Include:
+The 2.x line has no breaking changes. Anything that would make code written
+against a released 2.x version stop working — a removed or renamed symbol, a
+changed signature, changed observable behaviour — is out of scope, including
+versions softened by a compatibility shim or deprecation warning. If you
+conclude a task can't be done without one, stop and surface that to the user
+instead of implementing it.
 
-- What changed
-- Why it changed
-- How to migrate existing code
+`docs/migration.md` documents the v1 → v2 migration and is complete. Don't add
+sections to it; there is nothing new to migrate. Fixing errors or clarifying
+existing sections is welcome.
 
-Search for related sections in the migration guide and group related changes together
-rather than adding new standalone sections.
+A fix that brings behaviour in line with what its docstring or the spec
+already says is not a breaking change, but call out the behaviour delta in the
+PR description so a reviewer can weigh who might depend on the old behaviour.
 
 ## Documentation
 
